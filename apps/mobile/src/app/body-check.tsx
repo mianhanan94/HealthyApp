@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import { HEIGHT_CM, useBodyCheckViewModel, WEIGHT_KG } from '@/features/body/useBodyCheckViewModel';
 import { AppText } from '@/core/ui/AppText';
+import { Card } from '@/core/ui/Card';
 import { NumberField } from '@/core/ui/NumberField';
 import { Screen } from '@/core/ui/Screen';
 
@@ -29,7 +30,10 @@ export default function BodyCheckScreen() {
       />
 
       {vm.preview ? (
-        <>
+        <Card>
+          <AppText variant="eyebrow" muted>
+            {t('bodyCheck.bmi')}
+          </AppText>
           <AppText variant="heading">
             {t('bodyCheck.bmiLine', {
               bmi: vm.preview.bmi,
@@ -42,7 +46,7 @@ export default function BodyCheckScreen() {
               max: vm.preview.healthyMaxKg,
             })}
           </AppText>
-        </>
+        </Card>
       ) : null}
     </Screen>
   );

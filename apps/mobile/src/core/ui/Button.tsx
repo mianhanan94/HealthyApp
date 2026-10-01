@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet } from 'react-native';
 
 import { AppText } from './AppText';
-import { colors, MIN_TOUCH_SIZE, radius, spacing } from './theme';
+import { colors, CONTROL_HEIGHT, radius, spacing } from './theme';
 
 interface ButtonProps {
   label: string;
@@ -27,7 +27,7 @@ export function Button({ label, onPress, disabled = false }: ButtonProps) {
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: MIN_TOUCH_SIZE,
+    minHeight: CONTROL_HEIGHT,
     paddingHorizontal: spacing.lg,
     borderRadius: radius.md,
     backgroundColor: colors.primary,

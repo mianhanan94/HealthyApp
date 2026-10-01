@@ -11,6 +11,7 @@ const urLatn: Translations = {
   bodyCheck: {
     title: 'Aapka jism',
     height: 'Qad',
+    bmi: 'Aapka BMI',
     weight: 'Wazan',
     cm: 'cm',
     kg: 'kg',

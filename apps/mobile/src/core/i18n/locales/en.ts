@@ -8,6 +8,7 @@ const en = {
   bodyCheck: {
     title: 'Your body',
     height: 'Height',
+    bmi: 'Your BMI',
     weight: 'Weight',
     cm: 'cm',
     kg: 'kg',

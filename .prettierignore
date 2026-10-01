@@ -5,3 +5,4 @@ dist
 apps/*/ios
 apps/*/android
 docs/product-spec.md
+docs/design

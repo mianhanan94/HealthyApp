@@ -71,12 +71,12 @@ npm workspaces. Run everything from the root: `npm run lint`, `npm run typecheck
 
 ## 4. Design and UI
 
-- **The design is not decided yet.** It will be provided later. Do not take any design
-  instructions from `docs/product-spec.md`.
-- All colours, spacing, radii and type sizes come from `apps/mobile/src/core/ui/theme.ts`.
-  Never hardcode them in screens, so the real design is mostly a theme change.
-- Until then screens use plain, neutral UI built from `src/core/ui` primitives.
-- Every tappable element is at least 44×44 pt. Numbers use tabular figures.
+- The design is the owner's Lovable prototype, described in [`docs/DESIGN.md`](docs/DESIGN.md).
+  Do not take design instructions from `docs/product-spec.md`.
+- All colours, fonts, spacing, radii and shadows come from `apps/mobile/src/core/ui/theme.ts`.
+  Never hardcode them in screens.
+- Build screens from `src/core/ui` primitives. Every tappable element is at least 44×44 pt.
+  Numbers use tabular figures.
 
 ## 5. Language
 

@@ -9,7 +9,8 @@ How it is built is in [`ARCHITECTURE.md`](../ARCHITECTURE.md).
 2. [`product-spec.md`](product-spec.md) fills in functional detail only where it does not
    conflict with an owner decision. Where they conflict, the owner decision wins.
 3. **No design is taken from the spec** (colours, fonts, sizes, photo style, radii, rules,
-   icons, layout look). The design will be provided separately.
+   icons, layout look). The design is the owner's Lovable prototype: see
+   [`DESIGN.md`](DESIGN.md).
 4. Spec features not listed in the MVP below are not built until the owner asks for them.
 
 ## Owner decisions
@@ -32,7 +33,7 @@ How it is built is in [`ARCHITECTURE.md`](../ARCHITECTURE.md).
 | Address search    | Like Foodpanda/Grab: search with autocomplete, current location, map pin               |
 | Weekly meal plans | Wanted (2 meals/day, chosen a week ahead) but moved to **Phase 2**                     |
 | Backend           | Supabase, chosen to keep running cost low for the first 2–3 years                      |
-| Design            | Provided later; nothing from the spec                                                  |
+| Design            | Owner's Lovable prototype ([`DESIGN.md`](DESIGN.md)); nothing from the spec            |
 
 ## MVP
 
@@ -114,6 +115,6 @@ How it is built is in [`ARCHITECTURE.md`](../ARCHITECTURE.md).
 ## Spec open decisions, resolved
 
 1. Sex is required (the calorie formula needs it).
-2. Photo style is design: deferred.
+2. Photo style follows the Lovable design (colour photos).
 3. OTP is 6 digits.
 4. Cart holds one store's items (matches automatic store selection).

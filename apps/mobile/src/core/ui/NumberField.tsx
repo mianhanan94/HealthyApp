@@ -1,7 +1,7 @@
 import { StyleSheet, TextInput, View } from 'react-native';
 
 import { AppText } from './AppText';
-import { colors, MIN_TOUCH_SIZE, radius, spacing, typography } from './theme';
+import { colors, CONTROL_HEIGHT, radius, spacing, typography } from './theme';
 
 interface NumberFieldProps {
   label: string;
@@ -50,8 +50,9 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: MIN_TOUCH_SIZE,
-    paddingHorizontal: spacing.md,
+    minHeight: CONTROL_HEIGHT,
+    paddingHorizontal: 14,
+    backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
@@ -63,6 +64,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     color: colors.text,
+    fontFamily: typography.body.fontFamily,
     fontSize: typography.body.fontSize,
   },
   error: {
