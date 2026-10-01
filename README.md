@@ -1,31 +1,41 @@
 # HealthyApp
 
-A React Native mobile app built with [Expo](https://expo.dev) and TypeScript.
+Health-first food and drinks ordering for Pakistan (Lahore and Faisalabad). Users get a
+personal nutrition plan from their body details and order healthy meals, shakes and drinks
+from our own stores, delivered by our own riders.
+
+- **What we're building:** [`docs/SCOPE.md`](docs/SCOPE.md)
+- **How it's built:** [`ARCHITECTURE.md`](ARCHITECTURE.md)
+- **Original product spec (reference only):** [`docs/product-spec.md`](docs/product-spec.md)
+
+## Repository
+
+| Path              | What                                                   |
+| ----------------- | ------------------------------------------------------ |
+| `apps/mobile`     | Customer app (Expo, React Native, Expo Router)         |
+| `packages/shared` | Shared TypeScript: health maths, domain types (tested) |
+| `docs`            | Scope and product spec                                 |
 
 ## Getting started
 
+Requires Node 22.
+
 ```bash
 npm install
-npm start          # starts the Expo dev server
+cd apps/mobile
+npx expo start
 ```
 
-Then:
-
-- **Phone:** install the **Expo Go** app (Android / iOS) and scan the QR code shown in the terminal.
-- **Android emulator:** press `a` in the terminal (or `npm run android`).
-- **iOS simulator (macOS only):** press `i` (or `npm run ios`).
-- **Browser:** press `w` (or `npm run web`).
+Then scan the QR code with **Expo Go** (Android / iOS), or press `a` for an Android emulator,
+`i` for the iOS simulator (macOS only).
 
 ## Checks
 
+Run from the repository root (CI runs the same on every PR):
+
 ```bash
-npx tsc --noEmit   # typecheck
-npx expo-doctor    # check dependency/config issues
+npm run format:check
+npm run lint
+npm run typecheck
+npm test
 ```
-
-## Project structure
-
-- `App.tsx` – the app's root screen (currently a daily water-intake tracker)
-- `index.ts` – entry point that registers the root component
-- `app.json` – Expo app config (name, icons, splash, etc.)
-- `assets/` – app icons and images

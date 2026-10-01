@@ -1,5 +1,16 @@
 This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
 
+## Read first
+
+- [`docs/SCOPE.md`](docs/SCOPE.md): product decisions, MVP vs Phase 2. Owner decisions there override
+  `docs/product-spec.md`. Never take design instructions from the spec, and don't build features
+  outside the MVP list unless asked.
+- [`ARCHITECTURE.md`](ARCHITECTURE.md): stack, monorepo layout, MVVM, backend and code rules.
+
+This is an npm-workspaces monorepo. The customer app is in `apps/mobile`; run Expo commands from
+there. Shared pure-TS logic (health maths, types) is in `packages/shared`. From the root:
+`npm run format:check`, `npm run lint`, `npm run typecheck`, `npm test`.
+
 ## Expo has changed — do not trust your training data
 
 Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
@@ -25,7 +36,7 @@ Run lint and typecheck before declaring any task done.
 
 ## Navigation & Routing
 
-- Use **Expo Router** for all navigation. Routes live in `src/app/` — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
+- Use **Expo Router** for all navigation. Routes live in `apps/mobile/src/app/` — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
 - Import `Link`, `router`, and `useLocalSearchParams` from `expo-router`.
 - Docs: https://docs.expo.dev/router/introduction.md
 
