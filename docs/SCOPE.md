@@ -76,7 +76,7 @@ How it is built is in [`ARCHITECTURE.md`](../ARCHITECTURE.md).
 - Weekly meal plans / subscriptions (2 meals a day, chosen a week ahead)
 - JazzCash, Easypaisa and card payments; saved payment methods
 - Live rider location on a map; auto-assign the nearest rider
-- Coach (spec Part 5): patterns, advice cards, week chart
+- Coach (spec Part 5): patterns, advice cards, week chart. Its tab is hidden in the MVP (four tabs)
 - Build to Target (spec 3.2)
 - Smart nudges and "Fix it" auto-swap on Customise
 - Saved builds and "recipe updated" diffs (recipe versions are stored from the MVP onwards)

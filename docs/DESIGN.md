@@ -98,6 +98,5 @@ primary @ 18%. **Controls:** inputs and primary buttons are 52 high.
 - **Demo OTP** (code shown on screen, fake email/password accounts): real phone OTP instead.
 - Prototype data and flows that conflict with SCOPE (e.g. client-side order totals, one
   fixed city "LAHORE" label, plan form as one long page instead of the onboarding steps).
-- **Coach** tab: the design is kept, but Coach is Phase 2. Until then the tab is hidden or
-  shows a "coming soon" state — owner to decide.
+- **Coach** tab: Phase 2 (owner decision). The MVP tab bar has four tabs.
 - Web-only details: `app-frame` max width, hover effects, scrollbars.

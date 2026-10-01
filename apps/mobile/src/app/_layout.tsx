@@ -15,7 +15,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { colors, typography } from '@/core/ui/theme';
+import { colors, fonts } from '@/core/ui/theme';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -46,11 +46,13 @@ export default function RootLayout() {
           headerStyle: { backgroundColor: colors.background },
           headerShadowVisible: false,
           headerTintColor: colors.text,
-          headerTitleStyle: { fontFamily: typography.heading.fontFamily },
+          headerTitleAlign: 'center',
+          headerTitleStyle: { fontFamily: fonts.bold, fontSize: 16, color: colors.primary },
           contentStyle: { backgroundColor: colors.background },
         }}
       >
-        <Stack.Screen name="index" options={{ title: t('home.title') }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="menu" options={{ title: t('menu.title') }} />
         <Stack.Screen name="body-check" options={{ title: t('bodyCheck.title') }} />
       </Stack>
       <StatusBar style="dark" />
