@@ -1,51 +1,54 @@
-import { Info, Plus } from 'lucide-react-native';
+import { Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { formatMoney } from '@/core/format';
+import { formatMoney, grams } from '@/core/format';
 import { AppText } from '@/core/ui/AppText';
 import { MealPhoto } from '@/core/ui/MealPhoto';
 import { colors, fonts, radius, shadows } from '@/core/ui/theme';
 
-import type { Meal } from '../menu.types';
+import type { MenuItem } from '../menu.types';
 
 interface MealRowProps {
-  meal: Meal;
+  meal: MenuItem;
+  fits: boolean;
   onPress: () => void;
-  onAdd: () => void;
 }
 
-export function MealRow({ meal, onPress, onAdd }: MealRowProps) {
+/** Menu list row (Lovable `MealRow`). "Fits" shows only when it does; we never shame. */
+export function MealRow({ meal, fits, onPress }: MealRowProps) {
   const { t } = useTranslation();
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={styles.row}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${meal.name}, ${t('common.kcalProtein', {
+        kcal: meal.base.kcal,
+        protein: grams(meal.base.proteinG),
+      })}, ${formatMoney(meal.basePrice)}`}
+      onPress={onPress}
+      style={[styles.row, !meal.available && styles.unavailable]}
+    >
       <MealPhoto style={styles.photo} />
       <View style={styles.body}>
         <View style={styles.topLine}>
           <AppText style={styles.category}>{t(`menu.category.${meal.category}`)}</AppText>
-          <Info
-            size={15}
-            color={colors.textMuted}
-            accessibilityLabel={t('menu.nutritionInfo', { badge: t(`menu.badge.${meal.badge}`) })}
-          />
+          {fits ? (
+            <View style={styles.fits}>
+              <AppText style={styles.fitsText}>{t('common.fits')}</AppText>
+            </View>
+          ) : null}
         </View>
         <AppText style={styles.name} numberOfLines={2}>
           {meal.name}
         </AppText>
         <AppText muted style={styles.numbers}>
-          {t('common.kcalProtein', { kcal: meal.kcal, protein: meal.proteinG })}
+          {t('common.kcalProtein', { kcal: meal.base.kcal, protein: grams(meal.base.proteinG) })}
         </AppText>
         <View style={styles.bottomLine}>
-          <AppText style={styles.price}>{formatMoney(meal.price)}</AppText>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('home.add', { name: meal.name })}
-            onPress={onAdd}
-            hitSlop={8}
-            style={styles.add}
-          >
+          <AppText style={styles.price}>{formatMoney(meal.basePrice)}</AppText>
+          <View style={styles.add} accessibilityElementsHidden>
             <Plus size={17} color={colors.text} />
-          </Pressable>
+          </View>
         </View>
       </View>
     </Pressable>
@@ -63,6 +66,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.xl,
     boxShadow: shadows.card,
   },
+  unavailable: {
+    opacity: 0.5,
+  },
   photo: {
     width: 108,
     height: 116,
@@ -76,6 +82,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    minHeight: 20,
   },
   category: {
     fontFamily: fonts.bold,
@@ -83,6 +90,20 @@ const styles = StyleSheet.create({
     lineHeight: 14,
     textTransform: 'uppercase',
     color: colors.success,
+  },
+  fits: {
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+  },
+  fitsText: {
+    fontFamily: fonts.bold,
+    fontSize: 10,
+    lineHeight: 14,
+    textTransform: 'uppercase',
+    color: colors.primary,
   },
   name: {
     marginTop: 4,

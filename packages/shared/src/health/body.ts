@@ -82,7 +82,7 @@ export interface SafetyFlags {
   minor: boolean;
   /** Pregnant or breastfeeding: no weight-loss goal, advise seeing a doctor. */
   pregnancy: boolean;
-  /** BMI < 16 or ≥ 40: show the plan but recommend a doctor. */
+  /** Adults with BMI < 16 or ≥ 40: show the plan but recommend a doctor. */
   seeDoctor: boolean;
 }
 
@@ -91,7 +91,8 @@ export function safetyFlags(input: BodyInput): SafetyFlags {
   return {
     minor: input.age < 18,
     pregnancy: input.sex === 'female' && input.pregnantOrBreastfeeding === true,
-    seeDoctor: bmi < 16 || bmi >= 40,
+    // Adult cut-offs don't apply to under-18s (a slim 13-year-old can be under 16 and healthy).
+    seeDoctor: input.age >= 18 && (bmi < 16 || bmi >= 40),
   };
 }
 
@@ -109,16 +110,66 @@ export function isLikelyMuscular(input: BodyInput): boolean {
   );
 }
 
-/** Goals the user may pick on the goal screen, given their body result. */
+/** Room (kg) kept from the edge of the healthy range before we offer lose/gain to a healthy user. */
+const HEALTHY_EDGE_KG = 2;
+
+/**
+ * Goals the user may pick on the goal screen. Safety first: no weight loss when underweight,
+ * no weight gain when overweight or obese, and only "healthy growth" / "maintain" for minors
+ * and in pregnancy or breastfeeding.
+ */
 export function allowedGoals(input: BodyInput): Goal[] {
   const flags = safetyFlags(input);
   if (flags.minor) return ['healthy_growth'];
   if (flags.pregnancy) return ['maintain'];
 
+  const range = healthyWeightRange(input.heightCm);
+  switch (bmiCategory(calculateBmi(input.weightKg, input.heightCm))) {
+    case 'underweight':
+      return ['gain', 'maintain'];
+    case 'healthy': {
+      const goals: Goal[] = [];
+      if (input.weightKg > range.minKg + HEALTHY_EDGE_KG) goals.push('lose');
+      goals.push('maintain');
+      if (input.weightKg < range.maxKg - HEALTHY_EDGE_KG) goals.push('gain');
+      goals.push('build_muscle');
+      return goals;
+    }
+    case 'overweight':
+      return isLikelyMuscular(input) ? ['lose', 'maintain', 'build_muscle'] : ['lose', 'maintain'];
+    default:
+      return ['lose', 'maintain'];
+  }
+}
+
+/**
+ * The weight a goal aims for. For lose/gain in the healthy range we aim for a modest 5%
+ * change that stays at least 2 kg inside the range.
+ */
+export function goalTarget(input: BodyInput, goal: Goal): TargetWeight {
+  const hold = { targetKg: input.weightKg, isStepTarget: false };
   const category = bmiCategory(calculateBmi(input.weightKg, input.heightCm));
-  const goals: Goal[] = ['lose', 'maintain', 'gain'];
-  if (category === 'healthy' || isLikelyMuscular(input)) goals.push('build_muscle');
-  return goals;
+  const range = healthyWeightRange(input.heightCm);
+
+  if (goal === 'lose') {
+    if (category === 'overweight' || category === 'obese') {
+      return targetWeight(input.weightKg, input.heightCm);
+    }
+    if (category === 'healthy') {
+      const targetKg = Math.max(range.minKg + HEALTHY_EDGE_KG, roundTo(input.weightKg * 0.95, 0.5));
+      return targetKg < input.weightKg ? { targetKg, isStepTarget: false } : hold;
+    }
+    return hold;
+  }
+  if (goal === 'gain') {
+    if (category === 'underweight') return targetWeight(input.weightKg, input.heightCm);
+    if (category === 'healthy') {
+      const targetKg = Math.min(range.maxKg - HEALTHY_EDGE_KG, roundTo(input.weightKg * 1.05, 0.5));
+      return targetKg > input.weightKg ? { targetKg, isStepTarget: false } : hold;
+    }
+    return hold;
+  }
+  return hold;
 }
 
 export function suggestedGoal(input: BodyInput): Goal {
@@ -150,6 +201,12 @@ export interface BodyResult {
   safety: SafetyFlags;
 }
 
+/** The 5% milestone, but only when it comes before the target. */
+function milestoneBeforeTarget(input: BodyInput, targetKg: number): number | null {
+  const milestone = firstMilestoneKg(input.weightKg, input.heightCm);
+  return milestone !== null && milestone < Math.abs(targetKg - input.weightKg) ? milestone : null;
+}
+
 export function bodyResult(input: BodyInput): BodyResult {
   const bmi = calculateBmi(input.weightKg, input.heightCm);
   const safety = safetyFlags(input);
@@ -164,7 +221,7 @@ export function bodyResult(input: BodyInput): BodyResult {
     healthyRange: healthyWeightRange(input.heightCm),
     target,
     changeKg: round(target.targetKg - input.weightKg, 1),
-    milestoneKg: holdWeight ? null : firstMilestoneKg(input.weightKg, input.heightCm),
+    milestoneKg: holdWeight ? null : milestoneBeforeTarget(input, target.targetKg),
     waistToHeight:
       input.waistCm === undefined ? null : waistToHeight(input.waistCm, input.heightCm),
     suggestedGoal: suggestedGoal(input),

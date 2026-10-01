@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText } from '@/core/ui/AppText';
+import { usePricedCart } from '@/features/cart/cart.store';
 import { colors, fonts } from '@/core/ui/theme';
 
 export const TAB_BAR_HEIGHT = 72;
@@ -41,6 +42,7 @@ const ICON_SLOT = 28;
 export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const cartCount = usePricedCart().itemCount;
 
   return (
     <View style={[styles.bar, { bottom: Math.max(insets.bottom, TAB_BAR_GAP) }]}>
@@ -48,6 +50,7 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
         const focused = state.index === index;
         const Icon = ICONS[route.name] ?? House;
         const label = t(LABEL_KEYS[route.name as keyof typeof LABEL_KEYS] ?? 'tabs.home');
+        const a11yLabel = route.name === 'cart' && cartCount > 0 ? `${label}, ${cartCount}` : label;
         const isCart = route.name === 'cart';
 
         const onPress = () => {
@@ -63,7 +66,7 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
           <Pressable
             key={route.key}
             accessibilityRole="tab"
-            accessibilityLabel={label}
+            accessibilityLabel={a11yLabel}
             accessibilityState={{ selected: focused }}
             onPress={onPress}
             style={styles.tab}
@@ -71,6 +74,11 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
             {isCart ? (
               <View style={[styles.cartButton, focused && styles.cartButtonFocused]}>
                 <Icon size={18} color={colors.text} />
+                {cartCount > 0 ? (
+                  <View style={styles.badge}>
+                    <AppText style={styles.badgeText}>{cartCount > 99 ? '99+' : cartCount}</AppText>
+                  </View>
+                ) : null}
               </View>
             ) : (
               <View style={styles.iconSlot}>
@@ -123,6 +131,24 @@ const styles = StyleSheet.create({
     backgroundColor: colors.commerce,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  badge: {
+    position: 'absolute',
+    top: -6,
+    right: -8,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    paddingHorizontal: 4,
+    backgroundColor: colors.card,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: {
+    fontFamily: fonts.bold,
+    fontSize: 10,
+    lineHeight: 12,
+    color: colors.primary,
   },
   cartButtonFocused: {
     borderWidth: 2,

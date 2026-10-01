@@ -17,7 +17,7 @@ export const resources = {
 
 const i18n = createInstance();
 
-// TODO: persist the chosen language once local storage is added.
+// The saved choice is applied from the settings store in the root layout.
 void i18n.use(initReactI18next).init({
   resources,
   lng: DEFAULT_LANGUAGE,

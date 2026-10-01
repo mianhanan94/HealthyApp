@@ -71,12 +71,44 @@ How it is built is in [`ARCHITECTURE.md`](../ARCHITECTURE.md).
 - Users, riders, store managers (store managers see only their store)
 - Basic sales report
 
+## Built so far (no backend yet)
+
+Everything below runs on the phone with sample data; Supabase replaces the sample menu and
+on-device storage later without changing the screens.
+
+- Onboarding steps 1–4 (details → body result → goal and pace → plan), saved on the phone
+  and editable later ("Update my plan"). OTP and address come with the backend.
+- Home, Menu (with "Fits my plan" filter), Customise, Cart, Target and Profile.
+- Cart: one store, identical builds merge, max 10 per line, edit a line from the cart, lines
+  whose meal or options disappeared are flagged (never silently changed). Checkout is shown
+  but disabled until ordering is live.
+- Persistence: profile, cart and language survive restarts (AsyncStorage).
+- Sample menu: 10 items in `apps/mobile/src/features/menu/menu.repository.ts`, nutrition
+  checked against 4/4/9 kcal per gram in tests.
+
+## Health safety rules (beyond the spec)
+
+Added from a clinical review; all are in `packages/shared` with tests.
+
+- Goals offered depend on BMI: **no weight loss when underweight, no weight gain when
+  overweight or obese**; healthy users can lose or gain a modest 5%, staying at least 2 kg
+  inside the healthy range.
+- **Under-18s and pregnancy / breastfeeding:** no adult BMI label, verdict or weight target is
+  shown (adult cut-offs don't apply); plan is healthy growth / maintain only.
+- The "see a doctor" note for BMI < 16 or ≥ 40 is for adults only.
+- A first milestone is only shown when it comes before the target.
+- The plan footnote asks people with diabetes, kidney disease or high blood pressure to check
+  the numbers with their doctor.
+- Allergens: removing an ingredient never removes its allergen (cross-contact); options that
+  add allergens (egg, nuts…) add them to "Contains".
+
 ## Phase 2
 
 - Weekly meal plans / subscriptions (2 meals a day, chosen a week ahead)
 - JazzCash, Easypaisa and card payments; saved payment methods
 - Live rider location on a map; auto-assign the nearest rider
 - Coach (spec Part 5): patterns, advice cards, week chart. Its tab is hidden in the MVP (four tabs)
+- Plan number editing with steppers (spec 1.7 D) and the mini timeline chart (spec 1.6)
 - Build to Target (spec 3.2)
 - Smart nudges and "Fix it" auto-swap on Customise
 - Saved builds and "recipe updated" diffs (recipe versions are stored from the MVP onwards)

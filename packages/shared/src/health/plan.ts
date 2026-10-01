@@ -1,4 +1,4 @@
-import { allowedGoals, bodyResult, isActiveOrAbove, suggestedGoal } from './body';
+import { allowedGoals, bodyResult, goalTarget, isActiveOrAbove, suggestedGoal } from './body';
 import { round, roundTo } from './rounding';
 import type { ActivityLevel, BodyInput, Goal, MealSlot, MealsPerDay, Pace } from './types';
 
@@ -104,7 +104,7 @@ function weeksToChange(changeKg: number, weeklyKg: number): number {
 /** Pace rows for the goal screen. Empty for goals without a pace. */
 export function paceOptions(body: BodyInput, goal: Goal, today: Date): PaceOption[] {
   if (goal !== 'lose' && goal !== 'gain') return [];
-  const { changeKg } = bodyResult(body);
+  const changeKg = goalTarget(body, goal).targetKg - body.weightKg;
   // A timeline only makes sense when the target lies in the goal's direction.
   const hasTimeline = goal === 'lose' ? changeKg < 0 : changeKg > 0;
   const deficitLimit = maxDeficit(body);
@@ -149,10 +149,15 @@ export interface NutritionPlan {
   /** Share of daily kcal, whole percent. */
   macroPercent: { protein: number; carbs: number; fat: number };
   meals: MealTarget[];
+  /** Weight the chosen goal aims for (current weight for maintain / build muscle / growth). */
   targetKg: number;
   weeksToTarget: number | null;
   targetDate: Date | null;
+  /** First milestone (5% of weight) for weight loss, else null. */
+  milestoneKg: number | null;
   weeksToMilestone: number | null;
+  /** kg per week for lose/gain, else null. */
+  weeklyKg: number | null;
 }
 
 export interface PlanInput {
@@ -217,11 +222,13 @@ export function buildPlan({
   // Safety rules win over the user's choice (e.g. no weight loss for minors or in pregnancy).
   const goal = allowedGoals(body).includes(requestedGoal) ? requestedGoal : suggestedGoal(body);
   const result = bodyResult(body);
+  const target = goalTarget(body, goal);
   const bmr = calculateBmr(body);
   const tdee = calculateTdee(body);
   const kcal = dailyKcal(body, goal, pace);
 
-  // Protein is sized to the target weight for overweight users, so it isn't inflated by fat mass.
+  // Protein is sized to the healthy-range target for overweight users, so it isn't inflated by
+  // fat mass. This uses the body result target, which doesn't depend on the chosen goal.
   const referenceKg =
     result.category === 'overweight' || result.category === 'obese'
       ? result.target.targetKg
@@ -253,6 +260,13 @@ export function buildPlan({
     sugarMaxG: mealSugar[i] ?? 0,
   }));
 
+  // A milestone only helps if it comes before the target (not for a 1 kg change).
+  const milestoneKg =
+    goal === 'lose' &&
+    result.milestoneKg !== null &&
+    result.milestoneKg < Math.abs(target.targetKg - body.weightKg)
+      ? result.milestoneKg
+      : null;
   const hasPace = goal === 'lose' || goal === 'gain';
   const option = hasPace ? paceOptions(body, goal, today).find((o) => o.pace === pace) : undefined;
   const weeklyKg = option ? Math.abs(option.weeklyKg) : null;
@@ -275,12 +289,12 @@ export function buildPlan({
       fat: round(((fatG * 9) / kcal) * 100),
     },
     meals,
-    targetKg: result.target.targetKg,
+    targetKg: target.targetKg,
     weeksToTarget: option?.weeks ?? null,
     targetDate: option?.finishDate ?? null,
+    milestoneKg,
+    weeklyKg,
     weeksToMilestone:
-      goal === 'lose' && weeklyKg !== null && result.milestoneKg !== null
-        ? weeksToChange(result.milestoneKg, weeklyKg)
-        : null,
+      weeklyKg !== null && milestoneKg !== null ? weeksToChange(milestoneKg, weeklyKg) : null,
   };
 }

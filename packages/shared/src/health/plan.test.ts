@@ -51,6 +51,8 @@ describe('spec worked example (male, 28, 175.3 cm, 78 kg, lightly active, lose/s
   it('computes the timeline', () => {
     expect(plan.weeksToTarget).toBe(16);
     expect(plan.weeksToMilestone).toBe(8);
+    expect(plan.milestoneKg).toBe(4);
+    expect(plan.weeklyKg).toBe(0.5);
     expect(plan.targetDate).toEqual(new Date(2027, 0, 21));
   });
 
@@ -164,6 +166,8 @@ describe('safety overrides', () => {
     expect(bodyResult({ ...hamza, weightKg: 45 }).safety.seeDoctor).toBe(true);
     expect(bodyResult({ ...hamza, weightKg: 125 }).safety.seeDoctor).toBe(true);
     expect(bodyResult(hamza).safety.seeDoctor).toBe(false);
+    // Not for under-18s, where adult BMI cut-offs don't apply.
+    expect(bodyResult({ ...hamza, age: 13, weightKg: 45 }).safety.seeDoctor).toBe(false);
   });
 
   it('never goes below the kcal floor', () => {

@@ -69,6 +69,16 @@ npm workspaces. Run everything from the root: `npm run lint`, `npm run typecheck
 - Example: `src/app/body-check.tsx` (View) → `src/features/body/useBodyCheckViewModel.ts`
   (ViewModel) → `@healthyapp/shared` health maths (Model).
 
+### State
+
+- **Server data** (later): TanStack Query inside ViewModels.
+- **App-wide state**: small Zustand stores. `profile` (body details and plan inputs — the
+  plan itself is recalculated, never stored), `cart` (line references only; prices are re-read
+  from the menu every time) and `settings` (language) persist to AsyncStorage. The root layout
+  waits for them to load so screens never flash guest UI.
+- **Screen state**: local `useState` in the ViewModel (e.g. the onboarding draft, a build
+  being customised).
+
 ## 4. Design and UI
 
 - The design is the owner's Lovable prototype, described in [`docs/DESIGN.md`](docs/DESIGN.md).
@@ -123,6 +133,7 @@ There is no offline write or sync.
 - Lint, typecheck and tests must pass before merging (CI runs them on every PR):
   `npm run format:check && npm run lint && npm run typecheck && npm test`.
 - Add dependencies to the app with `npx expo install <pkg>` so versions match the SDK.
-- Health and pricing logic needs unit tests. The spec's worked example is a test in
-  `packages/shared/src/health/plan.test.ts`.
+- Health and pricing logic needs unit tests (Vitest). The spec's worked example is a test in
+  `packages/shared/src/health/plan.test.ts`. Pure logic in the app (form validation, sample
+  data checks) is tested with Vitest too: `*.test.ts` next to the code.
 - Branches off `main`, PRs for every change, conventional commit prefixes (`feat:`, `fix:`).

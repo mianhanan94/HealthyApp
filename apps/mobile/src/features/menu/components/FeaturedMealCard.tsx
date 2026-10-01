@@ -9,10 +9,10 @@ import { MealPhoto } from '@/core/ui/MealPhoto';
 import { Pill } from '@/core/ui/Pill';
 import { colors, CONTROL_HEIGHT, fonts, radius, shadows } from '@/core/ui/theme';
 
-import { HIGH_PROTEIN_G, type Meal } from '../menu.types';
+import { HIGH_PROTEIN_G, type MenuItem } from '../menu.types';
 
 interface FeaturedMealCardProps {
-  meal: Meal;
+  meal: MenuItem;
   onCustomize: () => void;
   onAdd: () => void;
 }
@@ -23,7 +23,7 @@ export function FeaturedMealCard({ meal, onCustomize, onAdd }: FeaturedMealCardP
     <View style={styles.card}>
       <Pressable accessibilityRole="button" accessibilityLabel={meal.name} onPress={onCustomize}>
         <MealPhoto style={styles.photo} />
-        {meal.proteinG >= HIGH_PROTEIN_G ? (
+        {meal.base.proteinG >= HIGH_PROTEIN_G ? (
           <View style={styles.tag}>
             <Pill tone="success" label={t('common.highProtein')} />
           </View>
@@ -37,11 +37,11 @@ export function FeaturedMealCard({ meal, onCustomize, onAdd }: FeaturedMealCardP
               {meal.description}
             </AppText>
           </View>
-          <AppText style={styles.price}>{formatMoney(meal.price)}</AppText>
+          <AppText style={styles.price}>{formatMoney(meal.basePrice)}</AppText>
         </View>
         <View style={styles.pills}>
-          <Pill label={t('common.kcal', { value: meal.kcal })} />
-          <Pill label={t('common.protein', { value: meal.proteinG })} />
+          <Pill label={t('common.kcal', { value: meal.base.kcal })} />
+          <Pill label={t('common.protein', { value: Math.round(meal.base.proteinG) })} />
         </View>
         <View style={styles.actions}>
           <Button

@@ -1,5 +1,3 @@
-import '@/core/i18n';
-
 // Per-weight imports so only these font files are bundled.
 import { DMSans_400Regular } from '@expo-google-fonts/dm-sans/400Regular';
 import { DMSans_500Medium } from '@expo-google-fonts/dm-sans/500Medium';
@@ -15,7 +13,11 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import i18n from '@/core/i18n';
+import { useSettingsStore } from '@/core/settings.store';
+import { Toast } from '@/core/ui/Toast';
 import { colors, fonts } from '@/core/ui/theme';
+import { useStoresHydrated } from '@/core/useStoresHydrated';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -30,8 +32,14 @@ export default function RootLayout() {
     SpaceGrotesk_600SemiBold,
     SpaceGrotesk_700Bold,
   });
+  const hydrated = useStoresHydrated();
+  const language = useSettingsStore((s) => s.language);
   // On a font error, carry on with system fonts rather than staying on the splash screen.
-  const ready = fontsLoaded || fontError !== null;
+  const ready = (fontsLoaded || fontError !== null) && hydrated;
+
+  useEffect(() => {
+    if (i18n.language !== language) void i18n.changeLanguage(language);
+  }, [language]);
 
   useEffect(() => {
     if (ready) void SplashScreen.hideAsync();
@@ -53,8 +61,10 @@ export default function RootLayout() {
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="menu" options={{ title: t('menu.title') }} />
-        <Stack.Screen name="body-check" options={{ title: t('bodyCheck.title') }} />
+        <Stack.Screen name="meal/[id]" options={{ title: t('meal.title') }} />
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
       </Stack>
+      <Toast />
       <StatusBar style="dark" />
     </>
   );
